@@ -57,11 +57,11 @@ export const App: React.FC = () => {
     whyInteresting: string;
   } | null>(null);
 
-  // Theme state ('light' | 'dark')
+  // Theme state ('light' | 'dark') - Default is Daytime Scholar ('light')
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('atlas_theme');
+    const saved = localStorage.getItem('atlas_theme_v2');
     if (saved === 'dark' || saved === 'light') return saved;
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'light';
   });
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export const App: React.FC = () => {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('atlas_theme', theme);
+    localStorage.setItem('atlas_theme_v2', theme);
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');

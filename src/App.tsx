@@ -23,6 +23,8 @@ import { TimelineHybridView } from './components/TimelineHybridView';
 import { KnowledgeGraphView } from './components/KnowledgeGraphView';
 import { IdeaJourneyView } from './components/IdeaJourneyView';
 import { PhilosopherDossierPanel } from './components/PhilosopherDossierPanel';
+import { ConceptDossierModal } from './components/ConceptDossierModal';
+import { SchoolDossierModal } from './components/SchoolDossierModal';
 import { CompareView } from './components/CompareView';
 import { BigQuestionsView } from './components/BigQuestionsView';
 import { ExploreCatalogView } from './components/ExploreCatalogView';
@@ -49,6 +51,8 @@ export const App: React.FC = () => {
 
   // Modals & Panels
   const [isDossierOpen, setIsDossierOpen] = useState(false);
+  const [modalConceptId, setModalConceptId] = useState<string | null>(null);
+  const [modalSchoolId, setModalSchoolId] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
   const [surpriseEntity, setSurpriseEntity] = useState<{
@@ -151,11 +155,19 @@ export const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenConceptDossier = (id: string) => {
+    setModalConceptId(id);
+  };
+
   const handleSelectSchool = (id: string) => {
     setSelectedSchoolId(id);
     setSelectedNodeId(id);
     setCurrentView('schools');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenSchoolDossier = (id: string) => {
+    setModalSchoolId(id);
   };
 
   const handleSelectQuestion = (id: string) => {
@@ -291,6 +303,8 @@ export const App: React.FC = () => {
               if (type === 'concept') setSelectedConceptId(id);
             }}
             onSelectPhilosopher={handleSelectPhilosopher}
+            onSelectConcept={handleOpenConceptDossier}
+            onSelectSchool={handleOpenSchoolDossier}
           />
         )}
 
@@ -347,9 +361,46 @@ export const App: React.FC = () => {
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         onSelectPhilosopherById={handleSelectPhilosopherById}
-        onSelectConcept={handleSelectConcept}
-        onSelectSchool={handleSelectSchool}
+        onSelectConcept={handleOpenConceptDossier}
+        onSelectSchool={handleOpenSchoolDossier}
+        onSelectQuestion={handleSelectQuestion}
         onCompareWith={handleCompareWith}
+      />
+
+      {/* 3b. In-Situ Concept Dossier Sheet */}
+      <ConceptDossierModal
+        conceptId={modalConceptId}
+        isOpen={!!modalConceptId}
+        onClose={() => setModalConceptId(null)}
+        onSelectPhilosopherById={(id) => {
+          setModalConceptId(null);
+          handleSelectPhilosopherById(id);
+        }}
+        onSelectSchoolById={(id) => {
+          setModalConceptId(null);
+          handleOpenSchoolDossier(id);
+        }}
+        onSelectRelatedConceptById={(id) => {
+          setModalConceptId(id);
+        }}
+      />
+
+      {/* 3c. In-Situ School & Tradition Dossier Sheet */}
+      <SchoolDossierModal
+        schoolId={modalSchoolId}
+        isOpen={!!modalSchoolId}
+        onClose={() => setModalSchoolId(null)}
+        onSelectPhilosopherById={(id) => {
+          setModalSchoolId(null);
+          handleSelectPhilosopherById(id);
+        }}
+        onSelectConceptById={(id) => {
+          setModalSchoolId(null);
+          handleOpenConceptDossier(id);
+        }}
+        onSelectOpposedSchoolById={(id) => {
+          setModalSchoolId(id);
+        }}
       />
 
       {/* 4. Command Palette (⌘K) */}

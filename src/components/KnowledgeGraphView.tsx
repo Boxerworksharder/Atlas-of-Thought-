@@ -12,7 +12,8 @@ import {
   RelationshipType, 
   Era, 
   Tradition, 
-  Domain 
+  Domain,
+  ENTITY_SYMBOLS
 } from '../types/philosophy';
 import { 
   ZoomIn, 
@@ -44,13 +45,17 @@ interface KnowledgeGraphViewProps {
   selectedNodeId: string | null;
   onSelectNode: (id: string, type: NodeType) => void;
   onSelectPhilosopher: (p: Philosopher) => void;
+  onSelectConcept?: (id: string) => void;
+  onSelectSchool?: (id: string) => void;
 }
 
 export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
   theme = 'light',
   selectedNodeId,
   onSelectNode,
-  onSelectPhilosopher
+  onSelectPhilosopher,
+  onSelectConcept,
+  onSelectSchool
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -336,7 +341,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
       .attr('font-size', '10.5px')
       .attr('font-weight', 'bold')
       .attr('fill', isDark ? '#F8FAFC' : '#111111')
-      .text(d => d.name);
+      .text(d => `${ENTITY_SYMBOLS[d.type as keyof typeof ENTITY_SYMBOLS] || '●'} ${d.name}`);
 
     // Click handler
     nodeElements.on('click', (event, d) => {
@@ -345,6 +350,10 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
       if (d.type === 'philosopher') {
         const phil = PHILOSOPHERS.find(p => p.id === d.id);
         if (phil) onSelectPhilosopher(phil);
+      } else if (d.type === 'concept' && onSelectConcept) {
+        onSelectConcept(d.id);
+      } else if (d.type === 'school' && onSelectSchool) {
+        onSelectSchool(d.id);
       }
     });
 
@@ -547,25 +556,25 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center space-x-2">
-              <span className="w-3 h-3 bg-entity-philosopher border border-ink-900 dark:border-[#2E3547] inline-block" />
-              <span>Philosopher</span>
+              <span className="w-4 h-4 rounded-full bg-entity-philosopher text-white text-[9px] flex items-center justify-center font-bold">●</span>
+              <span>PERSON (Thinker Node)</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="w-3 h-3 bg-entity-idea border border-ink-900 dark:border-[#2E3547] inline-block" />
-              <span>Concept / Problem</span>
+              <span className="w-4 h-4 bg-entity-idea text-white text-[9px] flex items-center justify-center font-bold">◆</span>
+              <span>IDEA (Concept / Inquiries)</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="w-3 h-3 bg-entity-school border border-ink-900 dark:border-[#2E3547] inline-block" />
-              <span>School / Tradition</span>
+              <span className="w-4 h-4 bg-entity-school text-white text-[9px] flex items-center justify-center font-bold">■</span>
+              <span>SCHOOL (Tradition / Movement)</span>
             </div>
             <div className="pt-1.5 border-t border-ink-900/20 dark:border-[#2E3547] space-y-1 text-ink-600 dark:text-[#94A3B8]">
               <div className="flex items-center space-x-2">
                 <span className="w-4 h-[2px] bg-ink-900 dark:bg-[#F8FAFC] inline-block" />
-                <span>Documented Influence (→)</span>
+                <span>Documented Transmission (→)</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="w-4 h-[2px] border-b border-dashed border-entity-philosopher inline-block" />
-                <span>Critique / Repudiation (⇢)</span>
+                <span className="w-4 h-[2px] border-b-2 border-dashed border-rose-500 inline-block" />
+                <span>Dialectical Critique (← vs)</span>
               </div>
             </div>
           </div>

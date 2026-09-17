@@ -127,6 +127,63 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       </section>
 
+      {/* 1b. CONCEPTUAL STACK ARCHITECTURE STRIP (Master Directive Section 33) */}
+      <section className="p-4 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono text-xs">
+          <div className="flex items-center space-x-2">
+            <span className="font-bold text-ink-900 dark:text-[#F8FAFC] uppercase tracking-wider text-[11px]">
+              Cartographic Conceptual Stack:
+            </span>
+            <span className="text-ink-500 dark:text-[#94A3B8] text-[10px] hidden sm:inline">
+              (How human thought accumulates)
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] font-bold">
+            <button 
+              onClick={() => onSelectView('timeline')}
+              className="px-2 py-1 bg-paper-200 dark:bg-[#1D222F] hover:bg-paper-300 text-ink-800 dark:text-[#CBD5E1] border border-ink-900/20 cursor-pointer"
+            >
+              ◷ TIME
+            </button>
+            <span className="text-ink-400 dark:text-[#64748B]">➔</span>
+            <button 
+              onClick={() => onSelectView('philosophers')}
+              className="px-2 py-1 bg-entity-philosopher text-white hover:opacity-90 cursor-pointer"
+            >
+              ● PHILOSOPHERS
+            </button>
+            <span className="text-ink-400 dark:text-[#64748B]">➔</span>
+            <button 
+              onClick={() => onSelectView('schools')}
+              className="px-2 py-1 bg-entity-school text-white hover:opacity-90 cursor-pointer"
+            >
+              ■ TRADITIONS
+            </button>
+            <span className="text-ink-400 dark:text-[#64748B]">➔</span>
+            <button 
+              onClick={() => onSelectView('ideas')}
+              className="px-2 py-1 bg-entity-idea text-white hover:opacity-90 cursor-pointer"
+            >
+              ◆ IDEAS
+            </button>
+            <span className="text-ink-400 dark:text-[#64748B]">➔</span>
+            <button 
+              onClick={() => onSelectView('compare')}
+              className="px-2 py-1 bg-paper-200 dark:bg-[#1D222F] text-ink-900 dark:text-[#F8FAFC] border border-ink-900/40 hover:bg-paper-300 cursor-pointer"
+            >
+              ◇ ARGUMENTS
+            </button>
+            <span className="text-ink-400 dark:text-[#64748B]">➔</span>
+            <button 
+              onClick={() => onSelectView('questions')}
+              className="px-2 py-1 bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-600/40 hover:bg-amber-500/30 cursor-pointer"
+            >
+              ? QUESTIONS
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* 2. THREE COMPLEMENTARY DISCOVERY MODES */}
       <section className="space-y-4 pt-4 border-t-2 border-ink-900 dark:border-[#2E3547]">
         <div className="flex items-center justify-between">

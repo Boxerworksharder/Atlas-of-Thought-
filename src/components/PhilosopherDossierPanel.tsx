@@ -1,6 +1,6 @@
 import React from 'react';
 import { Philosopher } from '../types/philosophy';
-import { PHILOSOPHERS, CONCEPTS, SCHOOLS } from '../data/philosophyData';
+import { PHILOSOPHERS, CONCEPTS, SCHOOLS, BIG_QUESTIONS } from '../data/philosophyData';
 import { 
   X, 
   ExternalLink, 
@@ -8,8 +8,12 @@ import {
   BookOpen, 
   Quote, 
   ShieldCheck, 
-  GitCompare
+  GitCompare,
+  Swords,
+  Users,
+  HelpCircle
 } from 'lucide-react';
+import { ENTITY_SYMBOLS } from '../types/philosophy';
 
 interface PhilosopherDossierPanelProps {
   philosopher: Philosopher | null;
@@ -18,6 +22,7 @@ interface PhilosopherDossierPanelProps {
   onSelectPhilosopherById: (id: string) => void;
   onSelectConcept: (id: string) => void;
   onSelectSchool: (id: string) => void;
+  onSelectQuestion?: (id: string) => void;
   onCompareWith: (p: Philosopher) => void;
 }
 
@@ -28,6 +33,7 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
   onSelectPhilosopherById,
   onSelectConcept,
   onSelectSchool,
+  onSelectQuestion,
   onCompareWith
 }) => {
   if (!isOpen || !philosopher) return null;
@@ -36,6 +42,16 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
   const influencesList = PHILOSOPHERS.filter(p => philosopher.influences.includes(p.id));
   const influencedList = PHILOSOPHERS.filter(p => philosopher.influenced.includes(p.id));
 
+  // Critics / Opponents
+  const criticsList = PHILOSOPHERS.filter(p => philosopher.critics?.includes(p.id));
+
+  // Contemporaries: Thinkers alive within ±60 years in same or interacting traditions
+  const contemporariesList = PHILOSOPHERS.filter(p => 
+    p.id !== philosopher.id &&
+    p.tradition === philosopher.tradition &&
+    Math.abs(p.birthYear - philosopher.birthYear) <= 65
+  ).slice(0, 4);
+
   // Associated Concepts
   const conceptList = CONCEPTS.filter(c => 
     philosopher.concepts.includes(c.id) || c.philosophers.includes(philosopher.id)
@@ -43,6 +59,12 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
 
   // Associated Schools
   const schoolList = SCHOOLS.filter(s => philosopher.schools.includes(s.id));
+
+  // Associated Questions
+  const relatedQuestionsList = BIG_QUESTIONS.filter(q => 
+    philosopher.relatedQuestions?.includes(q.id) ||
+    q.keyThinkers.some(kt => kt.philosopherId === philosopher.id)
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end bg-ink-950/60 backdrop-blur-xs select-none animate-in fade-in duration-150">
@@ -59,7 +81,9 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
         {/* Sticky Top Action Bar */}
         <div className="sticky top-0 z-30 bg-paper-50 dark:bg-[#151821] border-b-2 border-ink-900 dark:border-[#2E3547] px-6 py-3 flex items-center justify-between shadow-brutal-sm">
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 bg-entity-philosopher inline-block" />
+            <span className="text-entity-philosopher font-mono font-bold text-sm">
+              {ENTITY_SYMBOLS.philosopher}
+            </span>
             <span className="font-mono text-xs uppercase font-bold tracking-wider text-ink-700 dark:text-[#94A3B8]">
               Archival Dossier #{philosopher.id}
             </span>
@@ -90,9 +114,20 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
           {/* Header & Biographical Badges */}
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider">
-              <span className="font-bold text-white bg-entity-philosopher px-2 py-0.5 border border-ink-900 dark:border-[#2E3547] shadow-brutal-sm">
-                {philosopher.displayDates}
+              <span className="font-bold text-white bg-entity-philosopher px-2.5 py-0.5 border border-ink-900 dark:border-[#2E3547] shadow-brutal-sm">
+                ● {philosopher.displayDates}
               </span>
+              {philosopher.dateUncertainty && (
+                <span className={`px-2 py-0.5 font-bold border ${
+                  philosopher.dateUncertainty === 'ESTABLISHED'
+                    ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-500/30'
+                    : philosopher.dateUncertainty === 'PROBABLE'
+                    ? 'bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-500/30'
+                }`}>
+                  ◎ {philosopher.dateUncertainty}
+                </span>
+              )}
               <span className="bg-paper-300 dark:bg-[#1D222F] text-ink-900 dark:text-[#F8FAFC] px-2 py-0.5 border border-ink-900/30 dark:border-[#2E3547]">
                 {philosopher.tradition}
               </span>
@@ -100,6 +135,13 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
                 {philosopher.region}
               </span>
             </div>
+
+            {philosopher.dateUncertaintyNote && (
+              <div className="p-2.5 bg-paper-200 dark:bg-[#1D222F] border-l-2 border-amber-500 text-[11px] font-mono text-ink-800 dark:text-[#CBD5E1]">
+                <span className="font-bold text-ink-900 dark:text-[#F8FAFC]">Historiographical Note: </span>
+                {philosopher.dateUncertaintyNote}
+              </div>
+            )}
 
             <div className="space-y-1">
               <h1 className="text-3xl sm:text-4xl font-serif-title font-black text-ink-900 dark:text-[#F8FAFC] tracking-tight">
@@ -311,36 +353,179 @@ export const PhilosopherDossierPanel: React.FC<PhilosopherDossierPanelProps> = (
                 )}
               </div>
             </div>
+
+            {/* Critics & Dialectical Opponents */}
+            {criticsList.length > 0 && (
+              <div className="p-3 bg-rose-500/5 dark:bg-rose-950/20 border-2 border-rose-900/40 dark:border-rose-800/40 shadow-brutal-sm space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Swords className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-rose-900 dark:text-rose-300">
+                    Historic Critics & Dialectical Opponents
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  {criticsList.map(critic => (
+                    <div
+                      key={critic.id}
+                      onClick={() => onSelectPhilosopherById(critic.id)}
+                      className="p-2 bg-paper-50 dark:bg-[#151821] hover:bg-rose-50 dark:hover:bg-rose-900/30 border border-rose-900/30 dark:border-rose-700/50 cursor-pointer flex items-center justify-between transition-colors group"
+                    >
+                      <span className="font-serif-title font-bold text-xs text-ink-900 dark:text-[#F8FAFC] group-hover:text-rose-600 dark:group-hover:text-rose-400">
+                        ← vs {critic.name}
+                      </span>
+                      <span className="font-mono text-[10px] text-ink-500 dark:text-[#94A3B8]">
+                        {critic.displayDates}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Era Contemporaries */}
+            {contemporariesList.length > 0 && (
+              <div className="p-3 bg-paper-100 dark:bg-[#151821] border-2 border-ink-900/30 dark:border-[#2E3547] space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-3.5 h-3.5 text-ink-600 dark:text-[#94A3B8]" />
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink-700 dark:text-[#CBD5E1]">
+                    Era Contemporaries (±65 Years)
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {contemporariesList.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => onSelectPhilosopherById(c.id)}
+                      className="px-2.5 py-1 text-xs font-mono font-medium bg-paper-50 dark:bg-[#1D222F] text-ink-900 dark:text-[#F8FAFC] border border-ink-900/30 dark:border-[#2E3547] hover:border-entity-philosopher hover:text-entity-philosopher transition-colors cursor-pointer"
+                    >
+                      ● {c.name} ({c.displayDates})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* MAJOR WORKS & FAMOUS QUOTE */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Works */}
-            <div className="p-4 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm dark:shadow-brutal-dark-sm space-y-2">
+          {/* QUESTIONS INVESTIGATED (The WOW Moment bridge) */}
+          {relatedQuestionsList.length > 0 && (
+            <div className="space-y-3">
+              <div className="border-b-2 border-ink-900 dark:border-[#2E3547] pb-1 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <h3 className="font-serif-title font-bold text-lg text-ink-900 dark:text-[#F8FAFC]">
+                    Perennial Inquiries Addressed
+                  </h3>
+                </div>
+                <span className="font-mono text-xs text-ink-500 dark:text-[#94A3B8]">
+                  {relatedQuestionsList.length} Questions
+                </span>
+              </div>
+              <div className="space-y-2">
+                {relatedQuestionsList.map(q => {
+                  const thinkerStance = q.keyThinkers.find(kt => kt.philosopherId === philosopher.id);
+                  return (
+                    <div
+                      key={q.id}
+                      onClick={() => onSelectQuestion && onSelectQuestion(q.id)}
+                      className="p-3 bg-amber-500/5 dark:bg-amber-950/20 border-2 border-amber-900/30 dark:border-amber-700/40 shadow-brutal-sm hover:border-amber-600 cursor-pointer transition-all space-y-1.5 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-serif-title font-bold text-sm text-ink-900 dark:text-[#F8FAFC] group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                          ? {q.question}
+                        </span>
+                        <span className="font-mono text-[10px] uppercase font-bold text-amber-700 dark:text-amber-400 px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30">
+                          {q.domain}
+                        </span>
+                      </div>
+                      <p className="text-xs font-sans text-ink-700 dark:text-[#CBD5E1]">
+                        {q.subtitle}
+                      </p>
+                      {thinkerStance && (
+                        <div className="p-2 bg-paper-50 dark:bg-[#151821] border border-amber-900/20 dark:border-amber-800/30 text-xs font-mono text-ink-800 dark:text-[#F8FAFC]">
+                          <span className="font-bold text-amber-800 dark:text-amber-400">Position Stance: </span>
+                          {thinkerStance.stance}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* PRIMARY TEXTUAL CORPUS & WORKS (Prompt Visual Grammar: ▣ TEXT) */}
+          <div className="space-y-3">
+            <div className="border-b-2 border-ink-900 dark:border-[#2E3547] pb-1 flex items-center justify-between">
               <span className="font-mono text-xs font-bold uppercase text-ink-800 dark:text-[#F8FAFC] flex items-center space-x-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-entity-philosopher" />
-                <span>Seminal Works</span>
+                <span>Primary Textual Corpus & Seminal Works</span>
               </span>
-              <ul className="space-y-1 text-xs font-mono text-ink-700 dark:text-[#CBD5E1] list-disc list-inside">
-                {philosopher.works.map((w, idx) => (
-                  <li key={idx} className="italic font-serif">{w}</li>
-                ))}
-              </ul>
+              <span className="font-mono text-xs text-ink-500 dark:text-[#94A3B8]">
+                ▣ Canon
+              </span>
             </div>
 
-            {/* Quote */}
-            <div className="p-4 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm dark:shadow-brutal-dark-sm flex flex-col justify-between space-y-2">
-              <span className="font-mono text-xs font-bold uppercase text-ink-800 dark:text-[#F8FAFC] flex items-center space-x-1.5">
-                <Quote className="w-3.5 h-3.5 text-entity-philosopher" />
-                <span>Famous Axiom</span>
-              </span>
-              <blockquote className="text-xs sm:text-sm font-serif italic text-ink-900 dark:text-[#F8FAFC] leading-relaxed">
-                "{philosopher.famousQuote.quote}"
-              </blockquote>
-              <span className="font-mono text-[10px] text-ink-600 dark:text-[#94A3B8] block text-right">
-                — {philosopher.famousQuote.context}
-              </span>
-            </div>
+            {philosopher.primaryTexts && philosopher.primaryTexts.length > 0 ? (
+              <div className="grid grid-cols-1 gap-2.5">
+                {philosopher.primaryTexts.map((text, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm dark:shadow-brutal-dark-sm space-y-1.5"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-xs text-entity-philosopher font-bold">▣</span>
+                        <span className="font-serif-title font-bold text-sm text-ink-900 dark:text-[#F8FAFC] italic">
+                          {text.title}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2 font-mono text-[10px] text-ink-500 dark:text-[#94A3B8]">
+                        {text.language && <span className="px-1.5 py-0.5 bg-paper-200 dark:bg-[#1D222F] border border-ink-900/20">{text.language}</span>}
+                        {text.approxYear && <span>{text.approxYear}</span>}
+                      </div>
+                    </div>
+                    {text.originalTitle && (
+                      <div className="text-xs font-serif text-ink-600 dark:text-[#94A3B8]">
+                        Original: <span className="font-medium text-ink-800 dark:text-[#CBD5E1]">{text.originalTitle}</span>
+                      </div>
+                    )}
+                    {text.description && (
+                      <p className="text-xs font-sans text-ink-700 dark:text-[#CBD5E1] leading-relaxed">
+                        {text.description}
+                      </p>
+                    )}
+                    {text.significance && (
+                      <div className="p-1.5 bg-paper-200 dark:bg-[#1D222F] border-l-2 border-entity-idea text-[11px] font-mono text-ink-700 dark:text-[#CBD5E1]">
+                        <span className="font-bold text-ink-900 dark:text-[#F8FAFC]">Historiographical Impact: </span>
+                        {text.significance}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm dark:shadow-brutal-dark-sm">
+                <ul className="space-y-1 text-xs font-mono text-ink-700 dark:text-[#CBD5E1] list-disc list-inside">
+                  {philosopher.works.map((w, idx) => (
+                    <li key={idx} className="italic font-serif">{w}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* FAMOUS AXIOM QUOTE */}
+          <div className="p-4 bg-paper-50 dark:bg-[#151821] border-2 border-ink-900 dark:border-[#2E3547] shadow-brutal-sm dark:shadow-brutal-dark-sm flex flex-col justify-between space-y-2">
+            <span className="font-mono text-xs font-bold uppercase text-ink-800 dark:text-[#F8FAFC] flex items-center space-x-1.5">
+              <Quote className="w-3.5 h-3.5 text-entity-philosopher" />
+              <span>Famous Axiom & Core Thesis</span>
+            </span>
+            <blockquote className="text-xs sm:text-sm font-serif italic text-ink-900 dark:text-[#F8FAFC] leading-relaxed">
+              "{philosopher.famousQuote.quote}"
+            </blockquote>
+            <span className="font-mono text-[10px] text-ink-600 dark:text-[#94A3B8] block text-right">
+              — {philosopher.famousQuote.context}
+            </span>
           </div>
 
           {/* SCHOLARLY SOURCE LAYER (Prompt Section 42 & 43) */}

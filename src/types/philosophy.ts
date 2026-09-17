@@ -34,6 +34,31 @@ export type Domain =
 
 export type NodeType = 'philosopher' | 'concept' | 'school' | 'argument' | 'work';
 
+export const ENTITY_SYMBOLS = {
+  philosopher: '●',
+  concept: '◆',
+  school: '■',
+  text: '▣',
+  question: '?',
+  argument: '◇',
+  era: '◷',
+  source: '◎'
+} as const;
+
+export type UncertaintyStatus = 
+  | 'ESTABLISHED' 
+  | 'PROBABLE' 
+  | 'DISPUTED' 
+  | 'TRADITIONAL ATTRIBUTION' 
+  | 'UNCERTAIN';
+
+export type SourceCategory = 
+  | 'PRIMARY SOURCE' 
+  | 'SECONDARY SCHOLARLY REFERENCE (SEP)' 
+  | 'REFERENCE WORK' 
+  | 'CRITICAL APPARATUS' 
+  | 'CLASSICAL COMMENTARY';
+
 export type RelationshipType = 
   | 'INFLUENCED'
   | 'CRITICIZED'
@@ -52,6 +77,7 @@ export interface Source {
   title: string;
   publisher: string;
   url: string;
+  category?: SourceCategory;
   version?: string;
   accessedAt?: string;
   section?: string;
@@ -62,6 +88,15 @@ export interface DomainPosition {
   position: string;
   isDisputed?: boolean;
   disputeNote?: string;
+}
+
+export interface TextWork {
+  title: string;
+  originalTitle?: string;
+  approxYear?: string;
+  language?: string;
+  description?: string;
+  significance?: string;
 }
 
 export interface Philosopher {
@@ -83,6 +118,11 @@ export interface Philosopher {
   dna: { domain: Domain; weight: number }[]; // Visual topic map
   influences: string[]; // Philosopher IDs
   influenced: string[]; // Philosopher IDs
+  critics?: string[]; // Philosopher IDs of explicit critics/opponents
+  dateUncertainty?: UncertaintyStatus;
+  dateUncertaintyNote?: string;
+  relatedQuestions?: string[]; // BigQuestion IDs
+  primaryTexts?: TextWork[];
   famousQuote: {
     quote: string;
     context: string;
@@ -128,6 +168,7 @@ export interface School {
   coreTenets: string[];
   philosophers: string[]; // Philosopher IDs
   concepts: string[]; // Concept IDs
+  opposedSchools?: string[]; // School IDs of rival/opposed traditions
   sepUrl: string;
 }
 
@@ -141,6 +182,7 @@ export interface Relationship {
   description: string;
   evidence?: string;
   confidence: ConfidenceLevel;
+  uncertainty?: UncertaintyStatus;
   sources: Source[];
 }
 

@@ -23,7 +23,7 @@ import {
   BIG_QUESTIONS 
 } from '../data/philosophyData';
 import { INDIAN_SCHOOLS } from '../data/indianPhilosophyData';
-import { ViewMode } from '../types/philosophy';
+import { ViewMode, ENTITY_SYMBOLS } from '../types/philosophy';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -219,6 +219,35 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           </div>
         )}
 
+        {/* Educational Suggestions when empty */}
+        {!query && (
+          <div className="px-4 py-2.5 bg-paper-50 dark:bg-[#11131A] border-b border-ink-900/10 dark:border-[#2E3547] text-xs font-mono space-y-1.5">
+            <span className="text-ink-500 dark:text-[#94A3B8] uppercase text-[10px] tracking-wider font-bold block">
+              Scholarly Prompts / Canonical Seeds:
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { label: '● Plato', q: 'Plato' },
+                { label: '◆ Bundle Theory', q: 'Bundle Theory' },
+                { label: '■ Stoicism', q: 'Stoicism' },
+                { label: '? Consciousness', q: 'Consciousness' },
+                { label: '● Śaṅkara', q: 'Shankara' },
+                { label: '◷ 384 BCE', q: '384 BCE' },
+                { label: '◆ Anattā', q: 'Anatta' },
+                { label: '■ Advaita', q: 'Advaita' }
+              ].map(seed => (
+                <button
+                  key={seed.label}
+                  onClick={() => setQuery(seed.q)}
+                  className="px-2 py-0.5 bg-paper-200 dark:bg-[#1D222F] text-ink-900 dark:text-[#CBD5E1] border border-ink-900/20 dark:border-[#2E3547] hover:border-entity-idea hover:text-entity-idea transition-colors cursor-pointer text-[11px]"
+                >
+                  {seed.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Results List */}
         <div className="overflow-y-auto p-4 space-y-4">
           
@@ -248,9 +277,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingPhilosophers.length > 0 && (
             <div>
               <div className="font-mono text-[11px] uppercase tracking-wider text-entity-philosopher font-bold mb-2 flex items-center justify-between">
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1.5">
                   <Users className="w-3.5 h-3.5" />
-                  <span>Philosophers</span>
+                  <span>{ENTITY_SYMBOLS.philosopher} Philosophers (Thinker Nodes)</span>
                 </span>
                 <span className="text-ink-500 dark:text-[#94A3B8] font-normal">{matchingPhilosophers.length}</span>
               </div>
@@ -262,11 +291,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onSelectPhilosopher(p.id);
                       onClose();
                     }}
-                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-philosopher hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-philosopher hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors group"
                   >
                     <div>
                       <div className="flex items-baseline space-x-2">
-                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC]">{p.name}</span>
+                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC] group-hover:text-entity-philosopher">
+                          ● {p.name}
+                        </span>
                         {p.nativeName && (
                           <span className="text-xs text-ink-500 dark:text-[#94A3B8] font-sans">({p.nativeName})</span>
                         )}
@@ -289,9 +320,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingConcepts.length > 0 && (
             <div>
               <div className="font-mono text-[11px] uppercase tracking-wider text-entity-idea font-bold mb-2 flex items-center justify-between">
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1.5">
                   <Lightbulb className="w-3.5 h-3.5" />
-                  <span>Concepts & Problems</span>
+                  <span>{ENTITY_SYMBOLS.concept} Concepts & Inquiries</span>
                 </span>
                 <span className="text-ink-500 dark:text-[#94A3B8] font-normal">{matchingConcepts.length}</span>
               </div>
@@ -303,11 +334,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onSelectConcept(c.id);
                       onClose();
                     }}
-                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-idea hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-idea hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors group"
                   >
                     <div>
                       <div className="flex items-baseline space-x-2">
-                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC]">{c.name}</span>
+                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC] group-hover:text-entity-idea">
+                          ◆ {c.name}
+                        </span>
                         <span className="font-mono text-[10px] text-entity-idea font-semibold uppercase">
                           [{c.domain[0]}]
                         </span>
@@ -325,9 +358,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingSchools.length > 0 && (
             <div>
               <div className="font-mono text-[11px] uppercase tracking-wider text-entity-school font-bold mb-2 flex items-center justify-between">
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1.5">
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>Schools & Traditions</span>
+                  <span>{ENTITY_SYMBOLS.school} Schools & Movements</span>
                 </span>
                 <span className="text-ink-500 dark:text-[#94A3B8] font-normal">{matchingSchools.length}</span>
               </div>
@@ -339,11 +372,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onSelectSchool(s.id);
                       onClose();
                     }}
-                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-school hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-school hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors group"
                   >
                     <div>
                       <div className="flex items-baseline space-x-2">
-                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC]">{s.name}</span>
+                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC] group-hover:text-entity-school">
+                          ■ {s.name}
+                        </span>
                         <span className="font-mono text-[10px] text-ink-500 dark:text-[#94A3B8]">{s.period}</span>
                       </div>
                       <p className="text-xs text-ink-600 dark:text-[#CBD5E1] line-clamp-1 mt-0.5">{s.summary}</p>
@@ -361,9 +396,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingIndianSchools.length > 0 && (
             <div>
               <div className="font-mono text-[11px] uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold mb-2 flex items-center justify-between">
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1.5">
                   <Flame className="w-3.5 h-3.5" />
-                  <span>Indian Philosophy (Darśana)</span>
+                  <span>■ Indian Philosophy (Darśana)</span>
                 </span>
                 <span className="text-ink-500 dark:text-[#94A3B8] font-normal">{matchingIndianSchools.length}</span>
               </div>
@@ -375,11 +410,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onSelectView('indian');
                       onClose();
                     }}
-                    className="p-2.5 bg-amber-50/50 dark:bg-[#1D222F]/60 border border-amber-600/40 dark:border-amber-500/40 hover:border-amber-600 cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-2.5 bg-amber-50/50 dark:bg-[#1D222F]/60 border border-amber-600/40 dark:border-amber-500/40 hover:border-amber-600 cursor-pointer flex items-center justify-between transition-colors group"
                   >
                     <div>
                       <div className="flex items-baseline space-x-2">
-                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC]">{is_.name.english}</span>
+                        <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC] group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                          ■ {is_.name.english}
+                        </span>
                         <span className="font-mono text-[10px] text-amber-700 dark:text-amber-400 font-bold">({is_.name.iast})</span>
                         <span className="font-mono text-[10px] text-ink-500 dark:text-[#94A3B8]">{is_.dateRange}</span>
                       </div>
@@ -402,9 +439,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingQuestions.length > 0 && (
             <div>
               <div className="font-mono text-[11px] uppercase tracking-wider text-entity-question font-bold mb-2 flex items-center justify-between">
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1.5">
                   <HelpCircle className="w-3.5 h-3.5" />
-                  <span>Big Questions</span>
+                  <span>{ENTITY_SYMBOLS.question} Big Questions</span>
                 </span>
               </div>
               <div className="space-y-1.5">
@@ -415,10 +452,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onSelectQuestion(bq.id);
                       onClose();
                     }}
-                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-question hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-2.5 bg-paper-50 dark:bg-[#151821] border border-ink-900 dark:border-[#2E3547] hover:border-entity-question hover:bg-paper-200 dark:hover:bg-[#1D222F] cursor-pointer flex items-center justify-between transition-colors group"
                   >
                     <div>
-                      <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC]">{bq.question}</span>
+                      <span className="font-serif-title font-bold text-ink-900 dark:text-[#F8FAFC] group-hover:text-entity-question">
+                        ? {bq.question}
+                      </span>
                       <p className="text-xs text-ink-600 dark:text-[#CBD5E1] line-clamp-1 mt-0.5">{bq.subtitle}</p>
                     </div>
                     <span className="font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-entity-question/10 text-entity-question border border-entity-question/30 shrink-0 ml-2">
@@ -431,11 +470,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           )}
 
           {/* Empty state */}
-          {matchingPhilosophers.length === 0 && matchingConcepts.length === 0 && matchingSchools.length === 0 && (
-            <div className="p-8 text-center bg-paper-200 dark:bg-[#151821] border-2 border-dashed border-ink-900/30 dark:border-[#2E3547]">
-              <p className="font-serif-title font-bold text-lg text-ink-800 dark:text-[#F8FAFC]">No matching philosophical entries found</p>
-              <p className="text-xs text-ink-600 dark:text-[#94A3B8] font-mono mt-1">
-                The Atlas of Thought is continuously expanding. Try searching by domain (e.g. Ethics, Metaphysics) or school (e.g. Stoicism).
+          {matchingPhilosophers.length === 0 && matchingConcepts.length === 0 && matchingSchools.length === 0 && matchingIndianSchools.length === 0 && matchingQuestions.length === 0 && (
+            <div className="p-8 text-center bg-paper-200 dark:bg-[#151821] border-2 border-dashed border-ink-900/30 dark:border-[#2E3547] space-y-2">
+              <p className="font-serif-title font-bold text-lg text-ink-800 dark:text-[#F8FAFC]">
+                No Archival Entries Found for "{query}"
+              </p>
+              <p className="text-xs text-ink-600 dark:text-[#94A3B8] font-sans max-w-md mx-auto leading-relaxed">
+                Try searching canonical thinkers (e.g., <em>Plato, Spinoza, Śaṅkara, Hume</em>), key concepts (e.g., <em>Forms, Anattā, Cogito</em>), or enter a calendar year like <strong>384 BCE</strong> or <strong>1781</strong>.
               </p>
             </div>
           )}

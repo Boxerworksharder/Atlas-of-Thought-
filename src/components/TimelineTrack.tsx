@@ -323,9 +323,22 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
                   >
                     {/* Top Row: Dates & Tradition */}
                     <div className="flex items-center justify-between font-mono text-[9px] uppercase tracking-wider mb-1">
-                      <span className="font-bold text-entity-philosopher">
-                        {p.displayDates}
-                      </span>
+                      <div className="flex items-center space-x-1.5">
+                        <span className="font-bold text-entity-philosopher">
+                          ● {p.displayDates}
+                        </span>
+                        {p.dateUncertainty && (
+                          <span className={`px-1 py-0.2 text-[8px] font-bold border ${
+                            p.dateUncertainty === 'ESTABLISHED'
+                              ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-500/30'
+                              : p.dateUncertainty === 'PROBABLE'
+                              ? 'bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30'
+                              : 'bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-500/30'
+                          }`}>
+                            ◎ {p.dateUncertainty}
+                          </span>
+                        )}
+                      </div>
                       <span className="px-1 bg-paper-300 dark:bg-[#1D222F] text-ink-800 dark:text-[#CBD5E1] border border-ink-900/20 dark:border-[#2E3547]">
                         {p.tradition}
                       </span>
@@ -371,14 +384,18 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
             <span>Drag horizontally or use mousewheel to pan</span>
             <span>Showing {filteredPhilosophers.length} thinkers across time</span>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 text-[10px]">
+            <span className="flex items-center space-x-1">
+              <span className="font-bold text-entity-philosopher">●</span>
+              <span>PERSON</span>
+            </span>
             <span className="flex items-center space-x-1">
               <span className="w-2.5 h-[2px] bg-entity-philosopher inline-block" />
-              <span>Influence Lineage</span>
+              <span>Lineage</span>
             </span>
             <span className="flex items-center space-x-1">
               <span className="w-2.5 h-[2px] border-b border-dashed border-entity-philosopher inline-block" />
-              <span>Critique / Precedent</span>
+              <span>Probable / Disputed</span>
             </span>
           </div>
         </div>
@@ -419,7 +436,20 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
                   isSelected ? 'border-entity-philosopher ring-2 ring-entity-philosopher/30' : ''
                 }`}>
                   <div className="flex items-center justify-between font-mono text-[10px] uppercase text-ink-600 dark:text-[#94A3B8] mb-1">
-                    <span className="font-bold text-entity-philosopher">{p.displayDates}</span>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-bold text-entity-philosopher">● {p.displayDates}</span>
+                      {p.dateUncertainty && (
+                        <span className={`px-1 py-0.2 text-[8px] font-bold border ${
+                          p.dateUncertainty === 'ESTABLISHED'
+                            ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-500/30'
+                            : p.dateUncertainty === 'PROBABLE'
+                            ? 'bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30'
+                            : 'bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-500/30'
+                        }`}>
+                          ◎ {p.dateUncertainty}
+                        </span>
+                      )}
+                    </div>
                     <span className="px-1.5 py-0.5 bg-paper-300 dark:bg-[#1D222F] text-ink-800 dark:text-[#CBD5E1] border border-ink-900/20 dark:border-[#2E3547]">
                       {p.tradition}
                     </span>

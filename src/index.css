@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: #FAF8F5;
+    color: #111111;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-image: radial-gradient(#111111 0.75px, transparent 0.75px);
+    background-size: 24px 24px;
+    background-position: 0 0;
+  }
+
+  /* Dark mode body - Obsidian Scriptorium */
+  .dark body {
+    background-color: #0C0E12;
+    color: #F8FAFC;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 0.75px, transparent 0.75px);
+  }
+
+  /* Academic Atlas headings */
+  h1, h2, h3, .font-serif-title {
+    font-family: 'Cinzel', 'Cormorant Garamond', Georgia, serif;
+  }
+}
+
+/* Custom crisp brutalist scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F2EB;
+  border-left: 1px solid #111111;
+  border-top: 1px solid #111111;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #151821;
+  border-left: 1px solid #2E3547;
+  border-top: 1px solid #2E3547;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #111111;
+  border: 1px solid #FAF8F5;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2E3547;
+  border: 1px solid #0C0E12;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B93828;
+}
+
+/* Hard box utility */
+.brutal-card {
+  background-color: #FAF8F5;
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0px 0px #111111;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dark .brutal-card {
+  background-color: #151821;
+  color: #F8FAFC;
+  border: 2px solid #2E3547;
+  box-shadow: 3px 3px 0px 0px #06080C, 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.brutal-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #111111;
+}
+
+.dark .brutal-card:hover {
+  border-color: #3B445B;
+  box-shadow: 5px 5px 0px 0px #06080C, 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.brutal-card:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px #111111;
+}
+
+.dark .brutal-card:active {
+  box-shadow: 1px 1px 0px 0px #06080C;
+}
+
+.brutal-btn {
+  background-color: #FAF8F5;
+  color: #111111;
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0px 0px #111111;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.12s ease;
+}
+
+.dark .brutal-btn {
+  background-color: #1D222F;
+  color: #F8FAFC;
+  border: 2px solid #2E3547;
+  box-shadow: 3px 3px 0px 0px #06080C;
+}
+
+.brutal-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px #111111;
+  background-color: #F5F2EB;
+}
+
+.dark .brutal-btn:hover {
+  background-color: #252C3D;
+  border-color: #3B445B;
+  box-shadow: 4px 4px 0px 0px #06080C;
+}
+
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px #111111;
+}
+
+.dark .brutal-btn:active {
+  box-shadow: 0px 0px 0px 0px #06080C;
+}
+
+.brutal-btn-primary {
+  background-color: #111111;
+  color: #FAF8F5;
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0px 0px #111111;
+}
+
+.dark .brutal-btn-primary {
+  background-color: #F8FAFC;
+  color: #0C0E12;
+  border: 2px solid #F8FAFC;
+  box-shadow: 3px 3px 0px 0px #06080C;
+}
+
+.brutal-btn-primary:hover {
+  background-color: #B93828;
+  color: #FAF8F5;
+  border-color: #111111;
+}
+
+.dark .brutal-btn-primary:hover {
+  background-color: #B93828;
+  color: #F8FAFC;
+  border-color: #B93828;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
